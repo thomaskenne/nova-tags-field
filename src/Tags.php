@@ -114,9 +114,13 @@ class Tags extends Field
 
         $class = get_class($model);
 
-        $class::saved(function ($model) use ($tagNames) {
-            $model->syncTagsWithType($tagNames, $this->meta()['type'] ?? null);
-        });
+        if (method_exists($class, 'saved')) {
+            $class::saved(function ($model) use ($tagNames) {
+                $model->syncTagsWithType($tagNames, $this->meta()['type'] ?? null);
+            });
+        } else {
+            $model->{$attribute} = $tagNames;
+        }
     }
 
     public function resolveAttribute($resource, $attribute = null)
